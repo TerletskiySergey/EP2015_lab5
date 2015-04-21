@@ -23,14 +23,14 @@ public class MyArrayList {
 
     public void add(Object elem) {
         int incrementQuantity = 1;
-        checkIfExpandNecessary(incrementQuantity);
+        ensureCapacity(size + incrementQuantity);
         container[size++] = elem;
     }
 
     public void add(int index, Object element) {
         checkPositionIndex(index);
         int incrementQuantity = 1;
-        checkIfExpandNecessary(incrementQuantity);
+        ensureCapacity(size + incrementQuantity);
         if (index == size) {
             add(element);
             return;
@@ -47,7 +47,7 @@ public class MyArrayList {
     public void addAll(int index, Object[] toAdd) {
         checkPositionIndex(index);
         int incrementQuantity = toAdd.length;
-        checkIfExpandNecessary(incrementQuantity);
+        ensureCapacity(size + incrementQuantity);
         if (index != size) {
             System.arraycopy(container, index, container, index + incrementQuantity, size - index);
         }
@@ -57,7 +57,9 @@ public class MyArrayList {
 
     public void ensureCapacity(int minCapacity) {
         if (minCapacity > capacity) {
-            expandContainer(capacity = minCapacity);
+            capacity = minCapacity < DEFAULT_INITIAL_CAPACITY
+                    ? DEFAULT_INITIAL_CAPACITY : minCapacity;
+            expandContainer(capacity);
         }
     }
 
@@ -87,17 +89,6 @@ public class MyArrayList {
 
     public String toString() {
         return Arrays.toString(Arrays.copyOf(container, size));
-    }
-
-    private void checkIfExpandNecessary(int incrementQuantity) {
-        int requiredCapacity = size + incrementQuantity;
-        while (requiredCapacity > capacity) {
-            capacity += capacity >> 1;
-        }
-        if (capacity < DEFAULT_INITIAL_CAPACITY) {
-            capacity = DEFAULT_INITIAL_CAPACITY;
-        }
-        expandContainer(capacity);
     }
 
     private String outOfBoundsMsg(int index) {
